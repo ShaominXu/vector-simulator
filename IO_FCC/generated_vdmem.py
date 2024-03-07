@@ -1,8 +1,10 @@
 # Generating a vector {0, 1, 2, 3, ..., 449}
-vector_data = list(range(450))
+vector_a = list(range(256))
+# Generating a matrix of size 256x256: {-1, 1, -1, 1, -1, 1, -1, 1, ...} in odd rows and {1, -1, 1, -1, 1, -1, 1, -1, ...} in even rows
+matrix_w = [[-1 if j % 2 == 0 else 1 for j in range(256)] if i % 2 == 0 else [1 if j % 2 == 0 else -1 for j in range(256)] for i in range(256)]
 
 # Specify the file path
-output_file_path = "generated_vector.txt"
+output_file_path = "VDMEM.txt"
 
 # Writing the vector to a text file
 try:

@@ -119,6 +119,11 @@ class Core():
         self.PC = 0
         
     def execute(self, ins):
+        ins = ins.strip()
+        if ins.startswith("#") or ins == "":
+            print("Skipping comment or empty line:", ins)
+            return
+        ins = ins.split("#")[0].strip()
         print("Executing instruction:", ins)
         instruction = ins.split()
         operands = []

@@ -1,74 +1,94 @@
-LS SR1 SR0 0 # SR1 = 1
-LS SR2 SR0 1 # SR2 = 2
-LS SR3 SR0 2 # SR3 = 64 is VF length
-LS SR4 SR0 3 # SR4 = 256 is vector length
-LS SR6 SR0 4 # SR6 = 256 * 258 is the pointer to store data
-# Load vector a
-ADD SR5 SR0 SR0
-LV VR0 SR5 # SR5 is the pointer to load data
-ADD SR5 SR5 SR3
-LV VR2 SR5
-ADD SR5 SR5 SR3
-LV VR4 SR5
-ADD SR5 SR5 SR3
-LV VR6 SR5
-# Load matrix W[j]
-ADD SR5 SR5 SR3
-LV VR1 SR5
-ADD SR5 SR5 SR3
-LV VR3 SR5
-ADD SR5 SR5 SR3
-LV VR5 SR5
-ADD SR5 SR5 SR3
-LV VR7 SR5
-# Multiply vector a by matrix W[j]
-MULVV VR1 VR0 VR1
-MULVV VR3 VR2 VR3
-MULVV VR5 VR4 VR5
-MULVV VR7 VR6 VR7
-# Add the results from length 256 to 64
-ADDVV VR1 VR1 VR3
-ADDVV VR5 VR5 VR7
-ADDVV VR1 VR1 VR5
-# Store the result
-SVWS VR1 SR6 SR4
+# load matrix f and multiply by kernel
+ADD SR3 SR0 SR0 # SR3 = 0 row pointer
+ADD SR7 SR0 SR0 # SR7 = 0 result address
+ADD SR6 SR0 SR0 # SR6 = 0 counter
+# start loop over f rows
+ADD SR4 SR0 SR0 # SR4 = 0 kernel[i]
+# start loop over kernel[:]
+ADD SR2 SR0 SR0 # SR2 = 0 is j
+# start loop over kernel[i][:]
+ADD SR5 SR3 SR2
+LS SR1 SR0 10 # SR1 = 2 is stride
+LVWS VR1 SR5 SR1
+LS SR1 SR0 12 # SR1 = 128
+ADD SR5 SR5 SR1
+LS SR1 SR0 10 # SR1 = 2 is stride
+LVWS VR3 SR5 SR1
+ADD SR5 SR4 SR2
+LS SR1 SR5 0 # SR1 = kernel[i][j]
+MULVS VR1 VR1 SR1
+MULVS VR3 VR3 SR1
+ADDVV VR2 VR2 VR1
+ADDVV VR4 VR4 VR3
+LS SR1 SR0 9 # SR1 = 1
+ADD SR2 SR2 SR1
+LS SR1 SR0 16 # SR1 = 3
+BLT SR2 SR1 -17 # loop over kernel[i][:]
+ADD SR4 SR4 SR1
+LS SR1 SR0 13 # SR1 = 256
+ADD SR3 SR3 SR1
+LS SR1 SR0 15 # SR1 = 9
+BLT SR4 SR1 -24 # loop over kernel[:]
+# store result
+SV VR2 SR7
+LS SR1 SR0 11 # SR1 = 64
+ADD SR7 SR7 SR1
+SV VR4 SR7
+LS SR2 SR0 9 # SR2 = 1
+SUB SR1 SR1 SR2 # SR1 = 63
+ADD SR7 SR7 SR1
+# next row of f
+ADDVV VR2 VR0 VR0
+ADDVV VR4 VR0 VR0
+LS SR1 SR0 13 # SR1 = 256
+SUB SR3 SR3 SR1
+LS SR1 SR0 9 # SR1 = 1
 ADD SR6 SR6 SR1
-ADD SR7 SR7 SR1 # SR7 = j + 1
-BLT SR7 SR4 -22 # If j < 256, repeat
-# load vector b
-LS SR6 SR0 4
-SUB SR6 SR6 SR4
-LV VR0 SR6
-ADD SR6 SR6 SR3
-LV VR1 SR6
-ADD SR6 SR6 SR3
-LV VR2 SR6
-ADD SR6 SR6 SR3
-LV VR3 SR6
-ADD SR7 SR0 SR0 # SR7 = 0 is i
-# load the results[i]
-ADD SR6 SR6 SR3
-LV VR4 SR6
-ADD SR6 SR6 SR3
-LV VR5 SR6
-ADD SR6 SR6 SR3
-LV VR6 SR6
-ADD SR6 SR6 SR3
-LV VR7 SR6
-# Add the results (a * W) and vector b
-ADD VR0 VR0 VR4
-ADD VR1 VR1 VR5
-ADD VR2 VR2 VR6
-ADD VR3 VR3 VR7
-ADD SR7 SR7 SR1 # SR7 = i + 1
-BLT SR7 SR3 -15 # If i < 64, repeat
-# save the results to address 0
-ADD SR6 SR0 SR0
-SV VR0 SR6
-ADD SR6 SR6 SR3
-SV VR1 SR6
-ADD SR6 SR6 SR3
-SV VR2 SR6
-ADD SR6 SR6 SR3
-SV VR3 SR6
+LS SR2 SR0 12 # SR1 = 128
+SUB SR1 SR2 SR1
+BLT SR6 SR1 -44 # loop over f rows
 HALT
+
+
+
+
+# load matrix f and multiply by kernel
+ADD SR3 SR0 SR0 # SR3 = 0
+LS SR7 SR0 14 # SR7 = 256 * 256
+ADD SR6 SR0 SR0 # SR6 = 0
+ADD SR4 SR0 SR0 # SR4 = 0
+ADD SR2 SR0 SR0 # SR2 = 0
+LS SR1 SR0 10 # SR1 = 2 is stride
+ADD SR5 SR3 SR2
+LVWS VR1 SR5 SR1
+ADD SR5 SR4 SR2
+LS SR1 SR5 0 # SR1 = kernel[i][j]
+MULVS VR1 VR1 SR1
+ADDVV VR2 VR2 VR1
+LS SR1 SR0 9 # SR1 = 1
+ADD SR2 SR2 SR1
+LS SR1 SR0 16 # SR1 = 3
+BLT SR2 SR1 -10 # loop over kernel[i][:]
+ADD SR4 SR4 SR1
+LS SR1 SR0 13 # SR1 = 256
+ADD SR3 SR3 SR1
+LS SR1 SR0 15 # SR1 = 9
+BLT SR4 SR1 -16 # loop over kernel[:]
+SV VR2 SR7 # store result
+ADDVV VR2 VR0 VR0
+LS SR1 SR0 12 # SR1 = 128
+ADD SR7 SR7 SR1
+LS SR1 SR0 13 # SR1 = 256
+SUB SR3 SR3 SR1
+LS SR1 SR0 9 # SR1 = 1
+ADD SR6 SR6 SR1
+LS SR2 SR0 12 # SR1 = 128
+SUB SR1 SR2 SR1
+BLT SR6 SR1 -28 # loop over f[:][:128]
+LS SR1 SR0 12 # SR1 = 128
+ADD SR3 SR0 SR1
+LS SR7 SR0 14 # SR7 = 256 * 256
+LS SR1 SR0 11 # SR1 = 64
+SUB SR7 SR7 SR1
+LS SR1 SR0 9 # SR1 = 1
+# save result to address 0

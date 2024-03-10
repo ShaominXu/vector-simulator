@@ -82,11 +82,11 @@ class RegisterFile(object):
 
     def Write(self, idx, val):
         if 0 <= idx < self.reg_count:
-            if len(val) == self.vec_length:
-                for va in val:
+            if len(val) <= self.vec_length:
+                for i, va in enumerate(val):
                     if va < self.min_value or va > self.max_value:
                         va = c_int32(va).value
-                self.registers[idx] = val
+                    self.registers[idx][i] = va
             else:
                 print(self.name, "- ERROR: Invalid vector length at index: ", idx, " with vector length: ", len(val))
         else:
@@ -158,10 +158,10 @@ class Core():
             VR = [operands[1][i] * operands[2][0] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "DIVVV":
-            VR = [operands[1][i] // operands[2][i] for i in range(self.VLR.Read(0)[0])]
+            VR = [int(operands[1][i] / operands[2][i]) for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "DIVVS":
-            VR = [operands[1][i] // operands[2][0] for i in range(self.VLR.Read(0)[0])]
+            VR = [int(operands[1][i] / operands[2][0]) for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "SEQVV":
             self.VMR.Write(0, [1 if operands[0][i] == operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])

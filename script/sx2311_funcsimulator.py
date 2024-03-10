@@ -140,53 +140,53 @@ class Core():
                 
         
         if instruction[0] == "ADDVV":
-            VR = [operands[1][i] + operands[2][i] for i in range(len(operands[1]))]
+            VR = [operands[1][i] + operands[2][i] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "ADDVS":
-            VR = [operands[1][i] + operands[2][0] for i in range(len(operands[1]))]
+            VR = [operands[1][i] + operands[2][0] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "SUBVV":
-            VR = [operands[1][i] - operands[2][i] for i in range(len(operands[1]))]
+            VR = [operands[1][i] - operands[2][i] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "SUBVS":
-            VR = [operands[1][i] - operands[2][0] for i in range(len(operands[1]))]
+            VR = [operands[1][i] - operands[2][0] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "MULVV":
-            VR = [operands[1][i] * operands[2][i] for i in range(len(operands[1]))]
+            VR = [operands[1][i] * operands[2][i] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "MULVS":
-            VR = [operands[1][i] * operands[2][0] for i in range(len(operands[1]))]
+            VR = [operands[1][i] * operands[2][0] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "DIVVV":
-            VR = [operands[1][i] // operands[2][i] for i in range(len(operands[1]))]
+            VR = [operands[1][i] // operands[2][i] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "DIVVS":
-            VR = [operands[1][i] // operands[2][0] for i in range(len(operands[1]))]
+            VR = [operands[1][i] // operands[2][0] for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR)
         elif instruction[0] == "SEQVV":
-            self.VMR.Write(0, [1 if operands[0][i] == operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] == operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SEQVS":
-            self.VMR.Write(0, [1 if operands[0][i] == operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] == operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SNEVV":
-            self.VMR.Write(0, [1 if operands[0][i] != operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] != operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SNEVS":
-            self.VMR.Write(0, [1 if operands[0][i] != operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] != operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SLTVV":
-            self.VMR.Write(0, [1 if operands[0][i] < operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] < operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SLTVS":
-            self.VMR.Write(0, [1 if operands[0][i] < operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] < operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SLEVV":
-            self.VMR.Write(0, [1 if operands[0][i] <= operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] <= operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SLEVS":
-            self.VMR.Write(0, [1 if operands[0][i] <= operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] <= operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SGTVV":
-            self.VMR.Write(0, [1 if operands[0][i] > operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] > operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SGTVS":
-            self.VMR.Write(0, [1 if operands[0][i] > operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] > operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SGEVV":
-            self.VMR.Write(0, [1 if operands[0][i] >= operands[1][i] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] >= operands[1][i] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "SGEVS":
-            self.VMR.Write(0, [1 if operands[0][i] >= operands[1][0] else 0 for i in range(len(operands[0]))])
+            self.VMR.Write(0, [1 if operands[0][i] >= operands[1][0] else 0 for i in range(self.VLR.Read(0)[0])])
         elif instruction[0] == "CVM":
             self.VMR.Write(0, [1 for i in range(64)])
         elif instruction[0] == "POP": #Count the number of 1s in the Vector Mask Register and store the scalar value in SR1
@@ -196,22 +196,22 @@ class Core():
         elif instruction[0] == "MFCL":
             self.RFs["SRF"].Write(operands[0], self.VLR.Read(0))
         elif instruction[0] == "LV":
-            VR1 = [self.VDMEM.Read(operands[1][0]+i) for i in range(64)]
+            VR1 = [self.VDMEM.Read(operands[1][0]+i) for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR1)
         elif instruction[0] == "SV":
-            for i in range(64):
+            for i in range(self.VLR.Read(0)[0]):
                 self.VDMEM.Write(operands[1][0]+i, operands[0][i])
         elif instruction[0] == "LVWS":
-            VR1 = [self.VDMEM.Read(operands[1][0]+i*operands[2][0]) for i in range(64)]
+            VR1 = [self.VDMEM.Read(operands[1][0]+i*operands[2][0]) for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR1)
         elif instruction[0] == "SVWS":
-            for i in range(64):
+            for i in range(self.VLR.Read(0)[0]):
                 self.VDMEM.Write(operands[1][0]+i*operands[2][0], operands[0][i])
         elif instruction[0] == "LVI":
-            VR1 = [self.VDMEM.Read(operands[1][0]+operands[2][i]) for i in range(64)]
+            VR1 = [self.VDMEM.Read(operands[1][0]+operands[2][i]) for i in range(self.VLR.Read(0)[0])]
             self.RFs["VRF"].Write(operands[0], VR1)
         elif instruction[0] == "SVI":
-            for i in range(64):
+            for i in range(self.VLR.Read(0)[0]):
                 self.VDMEM.Write(operands[1][0]+operands[2][i], operands[0][i])
         elif instruction[0] == "LS":
             SR2 = self.SDMEM.Read(operands[1][0]+operands[2])

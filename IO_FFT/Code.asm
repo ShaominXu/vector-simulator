@@ -1,94 +1,77 @@
-# load matrix f and multiply by kernel
-ADD SR3 SR0 SR0 # SR3 = 0 row pointer
-ADD SR7 SR0 SR0 # SR7 = 0 result address
-ADD SR6 SR0 SR0 # SR6 = 0 counter
-# start loop over f rows
-ADD SR4 SR0 SR0 # SR4 = 0 kernel[i]
-# start loop over kernel[:]
-ADD SR2 SR0 SR0 # SR2 = 0 is j
-# start loop over kernel[i][:]
-ADD SR5 SR3 SR2
-LS SR1 SR0 10 # SR1 = 2 is stride
-LVWS VR1 SR5 SR1
-LS SR1 SR0 12 # SR1 = 128
+# real part of input x is stored in VDMEM 0~127
+# imaginary part of input x is stored in VDMEM 128~255
+# real part of weights w is stored in VDMEM 256~319
+# imaginary part of weights w is stored in VDMEM 320~383
+# 64 2-point FFTs
+LS SR2 SR0 1 # SR2 = 1
+MTCL SR2 # SR2 is k range
+# load w
+LS SR1 SR0 8 # SR1 = 256
+LV VR0 SR1 # VR0 = w real part
+LS SR1 SR0 9 # SR3 = 320
+LV VR1 SR1 # VR1 = w imaginary part
+LS SR4 SR0 0 # SR4 = 0 is offset for load y
+# load y_odd
+LS SR1 SR0 6 # SR1 = 64
+ADD SR5 SR4 SR1
+LV VR2 SR5 # VR2 = y_odd real part
+LS SR1 SR0 7 # SR1 = 128
 ADD SR5 SR5 SR1
-LS SR1 SR0 10 # SR1 = 2 is stride
-LVWS VR3 SR5 SR1
-ADD SR5 SR4 SR2
-LS SR1 SR5 0 # SR1 = kernel[i][j]
-MULVS VR1 VR1 SR1
-MULVS VR3 VR3 SR1
-ADDVV VR2 VR2 VR1
-ADDVV VR4 VR4 VR3
-LS SR1 SR0 9 # SR1 = 1
-ADD SR2 SR2 SR1
-LS SR1 SR0 16 # SR1 = 3
-BLT SR2 SR1 -17 # loop over kernel[i][:]
-ADD SR4 SR4 SR1
-LS SR1 SR0 13 # SR1 = 256
-ADD SR3 SR3 SR1
-LS SR1 SR0 15 # SR1 = 9
-BLT SR4 SR1 -24 # loop over kernel[:]
-# store result
-SV VR2 SR7
-LS SR1 SR0 11 # SR1 = 64
-ADD SR7 SR7 SR1
-SV VR4 SR7
-LS SR2 SR0 9 # SR2 = 1
-SUB SR1 SR1 SR2 # SR1 = 63
-ADD SR7 SR7 SR1
-# next row of f
-ADDVV VR2 VR0 VR0
-ADDVV VR4 VR0 VR0
-LS SR1 SR0 13 # SR1 = 256
-SUB SR3 SR3 SR1
-LS SR1 SR0 9 # SR1 = 1
-ADD SR6 SR6 SR1
-LS SR2 SR0 12 # SR1 = 128
-SUB SR1 SR2 SR1
-BLT SR6 SR1 -44 # loop over f rows
+LV VR3 SR5 # VR3 = y_odd imaginary part
+# w * y_odd
+LS SR1 SR0 15 # SR1 = 1000
+MULVV VR4 VR0 VR2 # VR4 = w_real * y_odd_real
+DIVVS VR4 VR4 SR1 # VR4 = w_real * y_odd_real / 1000
+MULVV VR5 VR1 VR3 # VR5 = w_imag * y_odd_imag
+DIVVS VR5 VR5 SR1 # VR5 = w_imag * y_odd_imag / 1000
+SUBVV VR6 VR4 VR5 # w * y_odd real part
+MULVV VR4 VR0 VR3 # VR4 = w_real * y_odd_imag
+DIVVS VR4 VR4 SR1 # VR4 = w_real * y_odd_imag / 1000
+MULVV VR5 VR1 VR2 # VR5 = w_imag * y_odd_real
+DIVVS VR5 VR5 SR1 # VR5 = w_imag * y_odd_real / 1000
+ADDVV VR7 VR4 VR5 # w * y_odd imaginary part
+# load y_even
+LS SR1 SR0 7 # SR1 = 128
+LV VR2 SR4 # VR2 = y_even real part
+ADD SR5 SR4 SR1
+LV VR3 SR5 # VR3 = y_even imaginary part
+# y_even + w * y_odd
+ADDVV VR4 VR2 VR6 # VR4 = y_even_real + w * y_odd real
+ADDVV VR5 VR3 VR7 # VR5 = y_even_imag + w * y_odd imag
+# y_even - w * y_odd
+SUBVV VR6 VR2 VR6 # VR6 = y_even_real - w * y_odd real
+SUBVV VR7 VR3 VR7 # VR7 = y_even_imag - w * y_odd imag
+# store y_even + w * y_odd
+LS SR1 SR0 10 # SR1 = 384
+ADD SR5 SR1 SR4
+ADD SR5 SR5 SR4 # SR4 * 2 is offset for store y
+SV VR4 SR5 # y_even + w * y_odd real part
+ADD SR5 SR5 SR2
+SV VR6 SR5 # y_even - w * y_odd real part
+LS SR1 SR0 12 # SR1 = 512
+ADD SR5 SR1 SR4
+ADD SR5 SR5 SR4
+SV VR5 SR5 # y_even + w * y_odd imaginary part
+ADD SR5 SR5 SR2
+SV VR7 SR5 # y_even - w * y_odd imaginary part
+# loop for i
+ADD SR4 SR4 SR2
+LS SR1 SR0 6 # SR1 = 64
+BLT SR4 SR1 -46 # jump to # load y_odd
+# save y from address 384 to 0 after each stage
+LS SR1 SR0 10 # SR1 = 384
+LS SR3 SR0 0 # SR3 = 0
+LS SR5 SR0 6 # SR5 = 64
+LS SR6 SR0 14 # SR6 = 640
+MTCL SR5
+LV VR0 SR1
+SV VR0 SR3
+ADD SR1 SR1 SR5
+ADD SR3 SR3 SR5
+BLT SR1 SR6 -4
+# loop stage
+ADD SR2 SR2 SR2
+MTCL SR2
+LS SR1 SR0 6 # SR1 = 64
+BLE SR2 SR1 -68 # jump to # load w
 HALT
-
-
-
-
-# load matrix f and multiply by kernel
-ADD SR3 SR0 SR0 # SR3 = 0
-LS SR7 SR0 14 # SR7 = 256 * 256
-ADD SR6 SR0 SR0 # SR6 = 0
-ADD SR4 SR0 SR0 # SR4 = 0
-ADD SR2 SR0 SR0 # SR2 = 0
-LS SR1 SR0 10 # SR1 = 2 is stride
-ADD SR5 SR3 SR2
-LVWS VR1 SR5 SR1
-ADD SR5 SR4 SR2
-LS SR1 SR5 0 # SR1 = kernel[i][j]
-MULVS VR1 VR1 SR1
-ADDVV VR2 VR2 VR1
-LS SR1 SR0 9 # SR1 = 1
-ADD SR2 SR2 SR1
-LS SR1 SR0 16 # SR1 = 3
-BLT SR2 SR1 -10 # loop over kernel[i][:]
-ADD SR4 SR4 SR1
-LS SR1 SR0 13 # SR1 = 256
-ADD SR3 SR3 SR1
-LS SR1 SR0 15 # SR1 = 9
-BLT SR4 SR1 -16 # loop over kernel[:]
-SV VR2 SR7 # store result
-ADDVV VR2 VR0 VR0
-LS SR1 SR0 12 # SR1 = 128
-ADD SR7 SR7 SR1
-LS SR1 SR0 13 # SR1 = 256
-SUB SR3 SR3 SR1
-LS SR1 SR0 9 # SR1 = 1
-ADD SR6 SR6 SR1
-LS SR2 SR0 12 # SR1 = 128
-SUB SR1 SR2 SR1
-BLT SR6 SR1 -28 # loop over f[:][:128]
-LS SR1 SR0 12 # SR1 = 128
-ADD SR3 SR0 SR1
-LS SR7 SR0 14 # SR7 = 256 * 256
-LS SR1 SR0 11 # SR1 = 64
-SUB SR7 SR7 SR1
-LS SR1 SR0 9 # SR1 = 1
-# save result to address 0

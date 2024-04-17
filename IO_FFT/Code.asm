@@ -2,14 +2,16 @@
 # imaginary part of input x is stored in VDMEM 128~255
 # real part of weights w is stored in VDMEM 256~319
 # imaginary part of weights w is stored in VDMEM 320~383
+CVM
 # 64 2-point FFTs
+LS SR7 SR0 6 # SR7 = 64
 LS SR2 SR0 1 # SR2 = 1
 MTCL SR2 # SR2 is k range
 # load w
 LS SR1 SR0 8 # SR1 = 256
-LV VR0 SR1 # VR0 = w real part
-LS SR1 SR0 9 # SR3 = 320
-LV VR1 SR1 # VR1 = w imaginary part
+LVWS VR0 SR1 SR7 # VR0 = w real part
+LS SR1 SR0 9 # SR1 = 320
+LVWS VR1 SR1 SR7 # VR1 = w imaginary part
 LS SR4 SR0 0 # SR4 = 0 is offset for load y
 # load y_odd
 LS SR1 SR0 6 # SR1 = 64
@@ -72,6 +74,8 @@ BLT SR1 SR6 -4
 # loop stage
 ADD SR2 SR2 SR2
 MTCL SR2
+LS SR1 SR0 1 # SR1 = 1
+SRL SR7 SR7 SR1
 LS SR1 SR0 6 # SR1 = 64
 BLE SR2 SR1 -68 # jump to # load w
 HALT

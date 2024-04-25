@@ -3,6 +3,21 @@ import argparse
 from ctypes import c_int32
 from collections import deque
 
+# vector data memory operations
+VEC_LOAD_OPS = {"LV", "LVWS", "LVI"}
+VEC_STORE_OPS = {"SV", "SVWS", "SVI"}
+VEC_DATA_OPS = VEC_LOAD_OPS | VEC_STORE_OPS
+# vector compute operations
+VEC_BASIC_OPS = {"ADDVS", "SUBVS", "MULVS", "DIVVS", "ADDVV", "SUBVV", "MULVV", "DIVVV"}
+VEC_MASK_OPS = {"SEQVV", "SNEVV", "SGTVV", "SLTVV", "SGEVV", "SLEVV", "SEQVS", "SNEVS", "SGTVS", "SLTVS", "SGEVS", "SLEVS"}
+VEC_SHUFFLE_OPS = {"UNPACKLO", "UNPACKHI", "PCAKLO", "PACKHI"}
+VEC_COMPUTE_OPS = VEC_BASIC_OPS | VEC_MASK_OPS | VEC_SHUFFLE_OPS
+# scalar operations
+VMR_SCALAR_OPS = {"CVM", "POP"}
+VLR_SCALAR_OPS = {"MTCL", "MFCL"}
+SCALAR_BASIC_OPS = {"LS", "SS", "ADD", "SUB", "AND", "OR", "XOR", "SLL", "SRL", "SRA"}
+SCALAR_OPS = VMR_SCALAR_OPS | VLR_SCALAR_OPS | SCALAR_BASIC_OPS
+# BRANCH_OPS = {"BGT", "BGE", "BLE", "BLT", "BEQ", "BNE"}
 class Config(object):
     def __init__(self, iodir):
         self.filepath = os.path.abspath(os.path.join(iodir, "Config.txt"))
@@ -16,293 +31,233 @@ class Config(object):
         except:
             print("Config - ERROR: Couldn't open file in path:", self.filepath)
             raise
-
-class IMEM(object):
+class Trace(object):
     def __init__(self, iodir):
-        self.size = pow(2, 16) # Can hold a maximum of 2^16 instructions.
-        self.filepath = os.path.abspath(os.path.join(iodir, "Code.asm"))
+        self.filepath = os.path.abspath(os.path.join(iodir, "trace.txt"))
         self.instructions = []
 
         try:
             with open(self.filepath, 'r') as insf:
-                self.instructions = [ins.split('#')[0].strip() for ins in insf.readlines() if not (ins.startswith('#') or ins.strip() == '')]
-            print("IMEM - Instructions loaded from file:", self.filepath)
-            # print("IMEM - Instructions:", self.instructions)
+                for line in insf.readlines():
+                    line = line.strip()
+                    if line:
+                        self.instructions.append(line)
+            print("Trace - Instructions loaded from file:", self.filepath)
         except:
-            print("IMEM - ERROR: Couldn't open file in path:", self.filepath)
-            raise
+            print("Trace - ERROR: Couldn't open file in path:", self.filepath)
 
     def Read(self, idx): # Use this to read from IMEM.
-        if idx < self.size:
+        if idx < len(self.instructions):
             return self.instructions[idx]
         else:
-            print("IMEM - ERROR: Invalid memory access at index: ", idx, " with memory size: ", self.size)
-
-class DMEM(object):
-    # Word addressible - each address contains 32 bits.
-    def __init__(self, name, iodir, addressLen):
-        self.name = name
-        self.size = pow(2, addressLen)
-        self.min_value  = -pow(2, 31)
-        self.max_value  = pow(2, 31) - 1
-        self.ipfilepath = os.path.abspath(os.path.join(iodir, name + ".txt"))
-        self.opfilepath = os.path.abspath(os.path.join(iodir, name + "OP.txt"))
-        self.data = []
-
-        try:
-            with open(self.ipfilepath, 'r') as ipf:
-                self.data = [int(line.strip()) for line in ipf.readlines()]
-            print(self.name, "- Data loaded from file:", self.ipfilepath)
-            # print(self.name, "- Data:", self.data)
-            self.data.extend([0x0 for i in range(self.size - len(self.data))])
-        except:
-            print(self.name, "- ERROR: Couldn't open input file in path:", self.ipfilepath)
-            raise
-
-    def Read(self, idx): # Use this to read from DMEM.
-        pass # Replace this line with your code here.
-
-    def Write(self, idx, val): # Use this to write into DMEM.
-        pass # Replace this line with your code here.
-
-    def dump(self):
-        try:
-            with open(self.opfilepath, 'w') as opf:
-                lines = [str(data) + '\n' for data in self.data]
-                opf.writelines(lines)
-            print(self.name, "- Dumped data into output file in path:", self.opfilepath)
-        except:
-            print(self.name, "- ERROR: Couldn't open output file in path:", self.opfilepath)
-            raise
-
-class RegisterFile(object):
-    def __init__(self, name, count, length = 1, size = 32, signed = True):
-        self.name       = name
-        self.reg_count  = count
-        self.vec_length = length # Number of 32 bit words in a register.
-        self.reg_bits   = size
-        self.min_value  = -pow(2, self.reg_bits-1) if signed else 0
-        self.max_value  = pow(2, self.reg_bits-1) - 1 if signed else pow(2, self.reg_bits) - 1
-        self.registers  = [[0x0 for e in range(self.vec_length)] for r in range(self.reg_count)] # list of lists of integers
-
-    def Read(self, idx):
-        return self.registers[idx]
-
-    def Write(self, idx, val):
-        if 0 <= idx < self.reg_count:
-            if len(val) <= self.vec_length:
-                for i, va in enumerate(val):
-                    if va < self.min_value or va > self.max_value:
-                        if self.reg_bits == 32:
-                            va = c_int32(va).value  # Clamp the value to 32-bit signed integer range when overflow occurs.
-                    self.registers[idx][i] = va
-            else:
-                print(self.name, "- ERROR: Invalid vector length at index: ", idx, " with vector length: ", len(val))
-        else:
-            print(self.name, "- ERROR: Invalid register access at index: ", idx, " with register count: ",
-                  self.reg_count)
-
-    def dump(self, iodir):
-        opfilepath = os.path.abspath(os.path.join(iodir, self.name + ".txt"))
-        try:
-            with open(opfilepath, 'w') as opf:
-                row_format = "{:<13}"*self.vec_length
-                lines = [row_format.format(*[str(i) for i in range(self.vec_length)]) + "\n", '-'*(self.vec_length*13) + "\n"]
-                lines += [row_format.format(*[str(val) for val in data]) + "\n" for data in self.registers]
-                opf.writelines(lines)
-            print(self.name, "- Dumped data into output file in path:", opfilepath)
-        except:
-            print(self.name, "- ERROR: Couldn't open output file in path:", opfilepath)
-            raise
+            raise IndexError("Trace - ERROR: Index out of bounds.")
 
 class Core():
-    def __init__(self, imem, sdmem, vdmem, config):
-        self.IMEM = imem
-        self.SDMEM = sdmem
-        self.VDMEM = vdmem
+    MVL = 64  # Max vector length
+    def __init__(self, trace, config):
+        self.TRACE = trace
         self.CONFIG = config
 
-        self.RFs = {"SRF": RegisterFile("SRF", 8),
-                    "VRF": RegisterFile("VRF", 8, 64)}
+        self.halted = False
+        self.cycles = 0
 
-        self.VMR = RegisterFile("VMR", 1, 64, 1, False)
-        self.VLR = RegisterFile("VLR", 1)
-
-        self.VMR.Write(0, [1 for _ in range(64)])
-        self.VLR.Write(0, [64])
-        
+        # Fetch
         self.PC = 0
-        self.halt = False
-        self.cycle = 0
-        self.vls_cycles = 0
-        self.vls_cycles_target = 0
-        self.vmul_cycles = 0
-        self.vmul_cycles_target = 0
-        self.vdiv_cycles = 0
-        self.vdiv_cycles_target = 0
-        self.vadd_cycles = 0
-        self.vadd_cycles_target = 0
-        self.shuffle_cycles = 0
-        self.shuffle_cycles_target = 0
+        self.ins = None
 
+        # Decode
+        self.vrf_busyboard = [False for _ in range(8)]
+        self.decode_enable = True
 
-        self.busy_board = [False for _ in range(8)]
+        # Dispatch
         self.data_queue = deque()
         self.compute_queue = deque()
         self.scalar_queue = deque()
-        self.ins_queue = deque()
-
-        self.vmul_ins = set(["MULVV", "MULVS"])
-        self.vdiv_ins = set(["DIVVV", "DIVVS"])
-        self.vadd_ins = set(["ADDVV", "SUBVV", "ADDVS", "SUBVS"])
-        self.vmask_ins = set(["SEQVV", "SNEVV", "SLTVV", "SGTVV", "SLEVV", "SGEVV", "SEQVS", "SNEVS", "SLTVS", "SGTVS", "SLEVS", "SGEVS"])
-        self.shuffle_ins = set(["UNPACKLO", "UNPACKHI", "PACKLO", "PACKHI"])
-        self.vl_ins = set(["LV", "LVWS", "LVI"])
-        self.vs_ins = set(["SV", "SVWS", "SVI"])
-        self.brach_ins = set(["BEQ", "BNE", "BLT", "BGT", "BLE", "BGE"])
-
-        self.vector_data_ins = self.vl_ins.union(self.vs_ins)
-        self.vector_compute_ins = self.vmul_ins.union(self.vdiv_ins).union(self.vadd_ins).union(self.vmask_ins).union(self.shuffle_ins)
-        self.scalar_ins = set(["CVM", "POP", "LS", "SS","ADD", "SUB", "AND", "OR", "XOR", "SLL", "SRL"]).union(self.brach_ins)
 
 
-    def step(self):
+        # Backend
+        self.bank_busyboard = [0] * self.CONFIG.parameters["vdmNumBanks"]
+        self.banks = None
+        self.vls_ins = None
+        self.vc_ins = None
+        self.vls_start = False
+        self.vc_start = False
+        self.vls_start_up = 0
+        self.vc_start_up = 0
+        self.VL = 0
 
-        ins = self.IMEM.Read(self.PC)
-        self.PC += 1
+    def run(self):
+        stop = False
+        while not stop:
+            self.backend()
+            # frontend
+            self.decode()
+            self.fetch()
 
-        ins = ins.strip()
-        if ins.startswith("#") or ins == "":
-            print("Skipping comment or empty line:", ins)
+            self.cycles += 1
+
+            stop = self.halted and not self.data_queue and not self.compute_queue and not self.scalar_queue and not self.vls_ins and not self.vc_ins
+
+        print("Core - Execution completed in", self.cycles, "cycles.")
+    def fetch(self):
+        if self.decode_enable and not self.halted:
+            self.ins = self.TRACE.Read(self.PC)
+            print("Fetched instruction:", self.ins, "in cycle:", self.cycles)
+            self.ins = self.ins.split()
+            self.PC += 1
+            if self.ins[0] == "HALT":
+                self.halted = True
+            elif not self.ins[0].startswith("B"):
+                self.decode_enable = False
+
+    def check_busyboard(self, ins):
+
+        if ins[0] not in VEC_BASIC_OPS | VEC_MASK_OPS | VEC_STORE_OPS | VEC_SHUFFLE_OPS:
+            return False
+
+        ops = ins[1:]
+        srcs = ops[-2:]
+        for src in srcs:
+            if src[:2] == "VR":
+                src = int(src[-1])
+                if self.vrf_busyboard[src]:
+                    return True
+        return False
+
+    def mark_busyboard(self, ins):
+        opcode = ins[0]
+        ops = ins[1:]
+        if opcode in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
+            des = ops[0]
+            des = int(des[-1])
+            self.vrf_busyboard[des] = True
+    def unmark_busyboard(self, ins):
+        opcode = ins[0]
+        ops = ins[1:]
+        if opcode in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
+            des = ops[0]
+            des = int(des[-1])
+            self.vrf_busyboard[des] = False
+
+    def decode(self):
+        if self.decode_enable:
             return
 
-        ins = ins.split("#")[0].strip()
-        print("Executing instruction:", ins)
-        inst = ins.split()
-        self.cycle += 1
+        if self.check_busyboard(self.ins):
+            return
 
-        #---------------Execute Stage--------------
-        if self.data_queue:
-            if self.vls_cycles == 0:
-                ins = self.data_queue[0]
-                if (ins[0] in ["SV", "SVWS"] and not self.busy_board[int(ins[1][-1])]) or \
-                        (ins[0] in ["LVI", "SVI"] and not self.busy_board[int(ins[1][-1])] and not self.busy_board[int(ins[-1][-1])]) or \
-                        ins[0] in ["LV", "LVWS"]:
-                    vls_ins = self.data_queue.popleft()
-                    self.vls_cycles += 1
-                    if self.VLR.Read(0)[0] % self.CONFIG.parameters["vdmNumBanks"] == 0:
-                        self.vls_cycles_target = self.CONFIG.parameters["vlsPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["vdmNumBanks"]
-                    else:
-                        self.vls_cycles_target = self.CONFIG.parameters["vlsPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["vdmNumBanks"] + 1
-            elif self.vls_cycles == self.vls_cycles_target:
-                self.vls_cycles = 0
-            else:
-                self.vls_cycles += 1
+        if self.ins[0] in VEC_DATA_OPS:
+            if len(self.data_queue) < self.CONFIG.parameters["dataQueueDepth"]:
+                self.data_queue.append(self.ins)
+                self.mark_busyboard(self.ins)
+                self.decode_enable = True
+        elif self.ins[0] in VEC_COMPUTE_OPS:
+            if len(self.compute_queue) < self.CONFIG.parameters["computeQueueDepth"]:
+                self.compute_queue.append(self.ins)
+                self.mark_busyboard(self.ins)
+                self.decode_enable = True
+        elif self.ins[0] in SCALAR_OPS:
+            self.scalar_queue.append(self.ins)
+            self.decode_enable = True
+        else:
+            raise ValueError("Core - ERROR: Invalid instruction in decode stage:", self.ins)
 
-        if self.compute_queue:
-            ins = self.compute_queue[0]
-            if ins[0] in self.vmul_ins:
-                if self.vmul_cycles == 0:
-                    if not self.busy_board[int(ins[-1][-1])] and not self.busy_board[int(ins[-2][-1])]:
-                        self.compute_queue.popleft()
-                        self.vmul_cycles += 1
-                        if self.VLR.Read(0)[0] % self.CONFIG.parameters["numLanes"] == 0:
-                            self.vmul_cycles_target = self.CONFIG.parameters["vmulPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"]
-                        else:
-                            self.vmul_cycles_target = self.CONFIG.parameters["vmulPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"] + 1
-                else:
-                    self.vmul_cycles += 1
-            elif ins[0] in self.vdiv_ins:
-                if self.vdiv_cycles == 0:
-                    if not self.busy_board[int(ins[-1][-1])] and not self.busy_board[int(ins[-2][-1])]:
-                        self.compute_queue.popleft()
-                        self.vdiv_cycles += 1
-                        if self.VLR.Read(0)[0] % self.CONFIG.parameters["numLanes"] == 0:
-                            self.vdiv_cycles_target = self.CONFIG.parameters["vdivPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"]
-                        else:
-                            self.vdiv_cycles_target = self.CONFIG.parameters["vdivPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"] + 1
-                elif self.vdiv_cycles == self.vdiv_cycles_target:
-                    self.vdiv_cycles = 0
-                    # set busy board to false
-                else:
-                    self.vdiv_cycles += 1
-            elif ins[0] in self.vadd_ins:
-                if self.vadd_cycles == 0:
-                    if not self.busy_board[int(ins[-1][-1])] and not self.busy_board[int(ins[-2][-1])]:
-                        self.compute_queue.popleft()
-                        self.vadd_cycles += 1
-                        if self.VLR.Read(0)[0] % self.CONFIG.parameters["numLanes"] == 0:
-                            self.vadd_cycles_target = self.CONFIG.parameters["vaddPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"]
-                        else:
-                            self.vadd_cycles_target = self.CONFIG.parameters["vaddPipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"] + 1
-                elif self.vadd_cycles == self.vadd_cycles_target:
-                    self.vadd_cycles = 0
-                    # set busy board to false
-                else:
-                    self.vadd_cycles += 1
-            elif ins[0] in self.shuffle_ins:
-                if self.shuffle_cycles == 0:
-                    if not self.busy_board[int(ins[-1][-1])] and not self.busy_board[int(ins[-2][-1])]:
-                        self.compute_queue.popleft()
-                        self.shuffle_cycles += 1
-                        if self.VLR.Read(0)[0] % self.CONFIG.parameters["numLanes"] == 0:
-                            self.shuffle_cycles_target = self.CONFIG.parameters["shufflePipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"]
-                        else:
-                            self.shuffle_cycles_target = self.CONFIG.parameters["shufflePipelineDepth"] + self.VLR.Read(0)[0] // self.CONFIG.parameters["numLanes"] + 1
-                elif self.shuffle_cycles == self.shuffle_cycles_target:
-                    self.shuffle_cycles = 0
-                    # set busy board to false
-                else:
-                    self.shuffle_cycles += 1
+    def vls_executing(self):
+        if self.vls_start:
+            self.vls_start = False
+            addrs = self.vls_ins[-1][1:-1].split(',')
+            self.banks = deque([int(addr) % self.CONFIG.parameters["vdmNumBanks"] for addr in addrs])
+
+        if self.vls_start_up < self.CONFIG.parameters["vlsPipelineDepth"]:
+            self.vls_start_up += 1
+            return
 
 
+        if self.banks and self.bank_busyboard[0] == 0:
+            self.bank_busyboard[0] = self.CONFIG.parameters["vdmBankBusyTime"]
+            self.banks.popleft()
+
+        for i in range(0, self.CONFIG.parameters["vdmNumBanks"]):
+            if self.bank_busyboard[i] > 0:
+                self.bank_busyboard[i] -= 1
+
+        if not self.banks and sum(self.bank_busyboard) == 0:
+            # print("Completed instruction:", self.vls_ins, "in cycle:", self.cycles)
+            self.vls_start_up = 0
+            self.unmark_busyboard(self.vls_ins)
+            self.vls_ins = None
+
+
+    def vc_executing(self):
+
+        # start up: vector multiply operations
+        if self.vc_ins[0] in {"MULVV", "MULVS"}:
+            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthMul"]:
+                self.vc_start_up += 1
+                return
+        # start up: vector add operations
+        elif self.vc_ins[0] in {"ADDVV", "ADDVS", "SUBVV", "SUBVS"} | VEC_MASK_OPS:
+            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthAdd"]:
+                self.vc_start_up += 1
+                return
+        # start up: vector divide operations
+        elif self.vc_ins[0] in {"DIVVV", "DIVVS"}:
+            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthDiv"]:
+                self.vc_start_up += 1
+                return
+        # start up: vector shuffle operations
+        elif self.vc_ins[0] in VEC_SHUFFLE_OPS:
+            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthShuffle"]:
+                self.vc_start_up += 1
+                return
+
+        # get vector length
+        if self.vc_start:
+            self.vc_start = False
+            if self.vc_ins[0] in VEC_BASIC_OPS:
+                self.VL = int(self.vc_ins[-1][1:-1])
+            elif self.vc_ins[0] in VEC_MASK_OPS | VEC_SHUFFLE_OPS:
+                self.VL = Core.MVL
+
+        # vector compute
+        if self.VL > 0:
+            self.VL -= self.CONFIG.parameters["numLanes"]
+        else:
+            # print("Completed instruction:", self.vc_ins, "in cycle:", self.cycles)
+            self.vc_start_up = 0
+            self.unmark_busyboard(self.vc_ins)
+            self.vc_ins = None
+
+    def backend(self):
+        # scalar operations
         if self.scalar_queue:
             self.scalar_queue.popleft()
 
-        # set busy board to false
+        #vector data memory operations
+        if not self.vls_ins and self.data_queue:
+            self.vls_ins = self.data_queue.popleft()
+            self.vls_start = True
+        if self.vls_ins:
+            self.vls_executing()
 
+        # vector compute operations
+        if not self.vc_ins and self.compute_queue:
+            self.vc_ins = self.compute_queue.popleft()
+            self.vc_start = True
+        if self.vc_ins:
+            self.vc_executing()
 
-        #---------------Decode Stage---------------
-        if self.ins_queue:
-            self.decode(self.ins_queue.popleft())
+    def dumptime(self, iodir):
+        with open(os.path.join(iodir, "time.txt"), 'a') as timef:
+            # dump config
+            timef.write("\n# Config Parameters:\n")
+            for param, val in self.CONFIG.parameters.items():
+                timef.write("{}: {}\n".format(param, val))
+            # dump time
+            timef.write("# Execution Time:\n")
+            timef.write("Cycles: {}\n".format(self.cycles))
+        print("Time Dumped to file:", os.path.join(iodir, "time.txt"))
 
-
-        #---------------Fetch Stage----------------
-        #Q: how to deal with HALT instruction?
-        if inst[0] in self.brach_ins:
-            self.PC += int(inst[3]) - 1
-        else:
-            self.ins_queue.append(inst)
-
-    def decode(self, ins):
-        if ins[0] in self.vector_data_ins:
-            if len(self.data_queue) < int(self.CONFIG.parameters["dataQueueDepth"]):
-                self.data_queue.append(ins)
-                if ins[0] in self.vl_ins:
-                    self.busy_board[int(ins[1][-1])] = True
-            else:
-                self.PC -= 1
-
-        elif ins[0] in self.vector_compute_ins:
-            if len(self.compute_queue) < int(self.CONFIG.parameters["computeQueueDepth"]):
-                self.compute_queue.append(ins)
-                if ins[0] in self.vmul_ins.union(self.vdiv_ins).union(self.vadd_ins).union(self.shuffle_ins):
-                    self.busy_board[int(ins[1][-1])] = True
-            else:
-                self.PC -= 1
-
-        elif ins[0] in self.scalar_ins:
-            self.scalar_queue.append(ins)
-
-    def run(self):
-        while(True):
-            if self.halt:
-                break
-            self.step()
-
-    def dumpregs(self, iodir):
-        for rf in self.RFs.values():
-            rf.dump(iodir)
 
 if __name__ == "__main__":
     #parse arguments for input file location
@@ -315,22 +270,13 @@ if __name__ == "__main__":
 
     # Parse Config
     config = Config(iodir)
-
-    # Parse IMEM
-    imem = IMEM(iodir)  
-    # Parse SMEM
-    sdmem = DMEM("SDMEM", iodir, 13) # 32 KB is 2^15 bytes = 2^13 K 32-bit words.
-    # Parse VMEM
-    vdmem = DMEM("VDMEM", iodir, 17) # 512 KB is 2^19 bytes = 2^17 K 32-bit words. 
+    trace = Trace(iodir)
 
     # Create Vector Core
-    vcore = Core(imem, sdmem, vdmem, config)
+    vcore = Core(trace, config)
 
     # Run Core
     vcore.run()   
-    #vcore.dumpregs(iodir)
-
-    #sdmem.dump()
-    #vdmem.dump()
+    vcore.dumptime(iodir)
 
     # THE END

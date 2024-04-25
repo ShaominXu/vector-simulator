@@ -84,7 +84,7 @@ class RegisterFile(object):
         else:
             return self.registers[idx]
 
-    def Write(self, idx, val, mask=None, length=None):
+    def Write(self, idx, val, mask=None, length= None):
 
         if length is None:
             length = self.vec_length
@@ -321,13 +321,13 @@ class Core():
         assert src1[:-1] == "SR"
         src1 = int(src1[-1])
         start_addr = self.RFs["SRF"].Read(int(src1))
-        if src2 is None:
+        if src2 is None: # LV, SV
             addrs = list(range(start_addr, start_addr + self.VL))
-        elif src2[:-1] == "SR":
+        elif src2[:-1] == "SR": # LVWS, SVWS
                 src2 = int(src2[-1])
                 stride = self.RFs["SRF"].Read(src2)
                 addrs = list(range(start_addr, start_addr + self.VL*stride, stride))
-        elif src2[:-1] == "VR":
+        elif src2[:-1] == "VR": # LVI, SVI
             src2 = int(src2[-1])
             offset = self.RFs["VRF"].Read(src2)
             addrs = [start_addr + offset[i] for i in range(self.VL)]
@@ -336,10 +336,10 @@ class Core():
         return addrs
 
     def lv(self, ins):
-        if len(ins) == 3:
+        if len(ins) == 3:# LV
             opcode, des, src1 = ins
             addrs = self.get_addrs(src1)
-        elif len(ins) == 4:
+        elif len(ins) == 4: # LVWS, LVI
             opcode, des, src1, src2 = ins
             addrs = self.get_addrs(src1, src2)
         else:
@@ -355,10 +355,10 @@ class Core():
         self.trace_value(addrs)
 
     def sv(self, ins):
-        if len(ins) == 3:
+        if len(ins) == 3: # SV
             opcode, des, src1 = ins
             addrs = self.get_addrs(src1)
-        elif len(ins) == 4:
+        elif len(ins) == 4: # SVWS, SVI
             opcode, des, src1, src2 = ins
             addrs = self.get_addrs(src1, src2)
         else:
@@ -389,6 +389,7 @@ class Core():
         imm = int(imm)
         addr = self.RFs["SRF"].Read(des) + imm
         self.SDMEM.Write(addr, self.RFs["SRF"].Read(src))
+        self.trace_value(addr)
 
     def sopss(self, ins):
         opcode, des, src1, src2 = ins
@@ -459,7 +460,7 @@ class Core():
             res = [vec1[i*2] if i < 32 else vec2[(i-32)*2] for i in range(Core.MVL)]
         elif opcode == "PACKHI":
             res = [vec1[i*2+1] if i < 32 else vec2[(i-32)*2+1] for i in range(Core.MVL)]
-        self.RFs["VRF"].Write(des, res, self.VM, self.VL)
+        self.RFs["VRF"].Write(des, res)
 
     def halt(self, ins):
         self.halted = True
@@ -474,25 +475,29 @@ class Core():
             return
 
         opfilepath = os.path.abspath(os.path.join(iodir, "trace.txt"))
-        with open(opfilepath, "w") as opf:
-            for ins, value in self.trace:
+        try:
+            with open(opfilepath, "w") as opf:
+                for ins, value in self.trace:
 
-                if value is not None:
+                    if value is not None:
 
-                    if type(value) is list:
-                        value = ",".join(str(v) for v in value)
+                        if type(value) is list:
+                            value = ",".join(str(v) for v in value)
 
-                    dins = ins.split()
-                    opcode = dins[0]
-                    ops = dins[1:]
-                    if opcode[0] in ["L", "S"]:
-                        opf.write(f"{opcode} {ops[0]} ({value})\n")
-                    elif opcode[0] == "B":
-                        opf.write(f"{opcode[0]} ({value})\n")
+                        dins = ins.split()
+                        opcode = dins[0]
+                        ops = dins[1:]
+                        if opcode[0] in ["L", "S"]:
+                            opf.write(f"{opcode} {ops[0]} ({value})\n")
+                        elif opcode[0] == "B":
+                            opf.write(f"{opcode[0]} ({value})\n")
+                        else:
+                            opf.write(f"{ins} ({value})\n")
                     else:
-                        opf.write(f"{ins} ({value})\n")
-                else:
-                    opf.write(f"{ins}\n")
+                        opf.write(f"{ins}\n")
+            print("Trace - Dumped trace into output file in path:", opfilepath)
+        except:
+            print("Trace - ERROR: Couldn't open output file in path:", opfilepath)
 
 if __name__ == "__main__":
     #parse arguments for input file location

@@ -54,7 +54,7 @@ class Trace(object):
 
 class Core():
     MVL = 64  # Max vector length
-    def __init__(self, trace, config):
+    def __init__(self, trace, config, pipelined=False):
         self.TRACE = trace
         self.CONFIG = config
 
@@ -82,9 +82,14 @@ class Core():
         self.vc_ins = None
         self.vls_start = False
         self.vc_start = False
-        self.vls_start_up = 0
-        self.vc_start_up = 0
+        self.vls_start_up_cycles = 0
+        self.vc_start_up_cycles = 0
         self.VL = 0
+
+        # Optimization: pipelined instruction start-up
+        self.pipelined = pipelined
+        self.start_up = True
+
 
     def run(self):
         stop = False
@@ -102,7 +107,7 @@ class Core():
     def fetch(self):
         if self.decode_enable and not self.halted:
             self.ins = self.TRACE.Read(self.PC)
-            print("Fetched instruction:", self.ins, "in cycle:", self.cycles)
+            # print("Fetched instruction:", self.ins, "in cycle:", self.cycles)
             self.ins = self.ins.split()
             self.PC += 1
             if self.ins[0] == "HALT":
@@ -163,8 +168,8 @@ class Core():
             addrs = self.vls_ins[-1][1:-1].split(',')
             self.banks = deque([int(addr) % self.CONFIG.parameters["vdmNumBanks"] for addr in addrs])
 
-        if self.vls_start_up < self.CONFIG.parameters["vlsPipelineDepth"]:
-            self.vls_start_up += 1
+        if self.vls_start_up_cycles < self.CONFIG.parameters["vlsPipelineDepth"]:
+            self.vls_start_up_cycles += 1
             return
 
 
@@ -177,33 +182,34 @@ class Core():
 
         if not self.banks and sum(self.bank_busyboard) == 0:
             # print("Completed instruction:", self.vls_ins, "in cycle:", self.cycles)
-            self.vls_start_up = 0
+            self.vls_start_up_cycles = 0
             self.unmark_busyboard(self.vls_ins)
             self.vls_ins = None
 
 
     def vc_executing(self):
 
-        # start up: vector multiply operations
-        if self.vc_ins[0] in {"MULVV", "MULVS"}:
-            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthMul"]:
-                self.vc_start_up += 1
-                return
-        # start up: vector add operations
-        elif self.vc_ins[0] in {"ADDVV", "ADDVS", "SUBVV", "SUBVS"} | VEC_MASK_OPS:
-            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthAdd"]:
-                self.vc_start_up += 1
-                return
-        # start up: vector divide operations
-        elif self.vc_ins[0] in {"DIVVV", "DIVVS"}:
-            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthDiv"]:
-                self.vc_start_up += 1
-                return
-        # start up: vector shuffle operations
-        elif self.vc_ins[0] in VEC_SHUFFLE_OPS:
-            if self.vc_start_up < self.CONFIG.parameters["pipelineDepthShuffle"]:
-                self.vc_start_up += 1
-                return
+        if self.start_up:
+            # start up: vector multiply operations
+            if self.vc_ins[0] in {"MULVV", "MULVS"}:
+                if self.vc_start_up_cycles < self.CONFIG.parameters["pipelineDepthMul"]:
+                    self.vc_start_up_cycles += 1
+                    return
+            # start up: vector add operations
+            elif self.vc_ins[0] in {"ADDVV", "ADDVS", "SUBVV", "SUBVS"} | VEC_MASK_OPS:
+                if self.vc_start_up_cycles < self.CONFIG.parameters["pipelineDepthAdd"]:
+                    self.vc_start_up_cycles += 1
+                    return
+            # start up: vector divide operations
+            elif self.vc_ins[0] in {"DIVVV", "DIVVS"}:
+                if self.vc_start_up_cycles < self.CONFIG.parameters["pipelineDepthDiv"]:
+                    self.vc_start_up_cycles += 1
+                    return
+            # start up: vector shuffle operations
+            elif self.vc_ins[0] in VEC_SHUFFLE_OPS:
+                if self.vc_start_up_cycles < self.CONFIG.parameters["pipelineDepthShuffle"]:
+                    self.vc_start_up_cycles += 1
+                    return
 
         # get vector length
         if self.vc_start:
@@ -218,9 +224,15 @@ class Core():
             self.VL -= self.CONFIG.parameters["numLanes"]
         else:
             # print("Completed instruction:", self.vc_ins, "in cycle:", self.cycles)
-            self.vc_start_up = 0
+            self.vc_start_up_cycles = 0
             self.unmark_busyboard(self.vc_ins)
             self.vc_ins = None
+
+            if self.pipelined:
+                if self.compute_queue:
+                    self.start_up = False
+                else:
+                    self.start_up = True
 
     def backend(self):
         # scalar operations
@@ -244,12 +256,15 @@ class Core():
     def dumptime(self, iodir):
         with open(os.path.join(iodir, "time.txt"), 'a') as timef:
             # dump config
-            timef.write("\n# Config Parameters:\n")
+            timef.write("# Config Parameters:\n")
             for param, val in self.CONFIG.parameters.items():
                 timef.write("{}: {}\n".format(param, val))
+            # dump optimization
+            if self.pipelined:
+                timef.write("# Optimization: Pipelined Instruction Start-up\n")
             # dump time
             timef.write("# Execution Time:\n")
-            timef.write("Cycles: {}\n".format(self.cycles))
+            timef.write("Cycles: {}\n\n".format(self.cycles))
         print("Time Dumped to file:", os.path.join(iodir, "time.txt"))
 
 
@@ -257,6 +272,7 @@ if __name__ == "__main__":
     #parse arguments for input file location
     parser = argparse.ArgumentParser(description='Vector Core Functional Simulator')
     parser.add_argument('--iodir', default="", type=str, help='Path to the folder containing the input files - instructions and data.')
+    parser.add_argument("--pipelined", default=False, action='store_true', help="Pipelined instruction start-up.")
     args = parser.parse_args()
 
     iodir = os.path.abspath(args.iodir)
@@ -267,7 +283,7 @@ if __name__ == "__main__":
     trace = Trace(iodir)
 
     # Create Vector Core
-    vcore = Core(trace, config)
+    vcore = Core(trace, config, pipelined=args.pipelined)
 
     # Run Core
     vcore.run()   

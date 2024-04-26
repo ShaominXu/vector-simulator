@@ -115,8 +115,7 @@ class Core():
         if ins[0] not in VEC_BASIC_OPS | VEC_MASK_OPS | VEC_STORE_OPS | VEC_SHUFFLE_OPS:
             return False
 
-        ops = ins[1:]
-        srcs = ops[-2:]
+        srcs = ins[-3:]
         for src in srcs:
             if src[:2] == "VR":
                 src = int(src[-1])
@@ -125,17 +124,13 @@ class Core():
         return False
 
     def mark_busyboard(self, ins):
-        opcode = ins[0]
-        ops = ins[1:]
-        if opcode in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
-            des = ops[0]
+        if ins[0] in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
+            des = ins[1:][0]
             des = int(des[-1])
             self.vrf_busyboard[des] = True
     def unmark_busyboard(self, ins):
-        opcode = ins[0]
-        ops = ins[1:]
-        if opcode in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
-            des = ops[0]
+        if ins[0] in VEC_BASIC_OPS | VEC_LOAD_OPS | VEC_SHUFFLE_OPS:
+            des = ins[1:][0]
             des = int(des[-1])
             self.vrf_busyboard[des] = False
 
@@ -173,9 +168,8 @@ class Core():
             return
 
 
-        if self.banks and self.bank_busyboard[0] == 0:
-            self.bank_busyboard[0] = self.CONFIG.parameters["vdmBankBusyTime"]
-            self.banks.popleft()
+        if self.banks and self.bank_busyboard[self.banks[0]] == 0:
+            self.bank_busyboard[self.banks.popleft()] = self.CONFIG.parameters["vdmBankBusyTime"]
 
         for i in range(0, self.CONFIG.parameters["vdmNumBanks"]):
             if self.bank_busyboard[i] > 0:

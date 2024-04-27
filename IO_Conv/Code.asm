@@ -1,3 +1,4 @@
+CVM
 LS SR1 SR0 11 # SR1 = 64
 MTCL SR1
 # load matrix f and multiply by kernel

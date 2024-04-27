@@ -1,0 +1,804 @@
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 236994
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 8
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 226961
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 16
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 222389
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 32
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 220103
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 64
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 218960
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 128
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Optimization: Pipelined Instruction Start-up
+# Execution Time:
+Cycles: 218960
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 8
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 227088
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 16
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 222389
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 32
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 220103
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 64
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 218960
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 128
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 218960
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 1
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 397268
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 2
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 381266
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 3
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 4
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 5
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 6
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 4
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 242328
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 8
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 252488
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 16
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 400824
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 16
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 400824
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 32
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 709688
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 64
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 1327416
+
+# Config Parameters:
+dataQueueDepth: 1
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 2
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 3
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 5
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 6
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 1
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 238264
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 2
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 3
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 5
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 6
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 1
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 238264
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 8
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 229628
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 9
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 232168
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 10
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 234708
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 12
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 239788
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 13
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 242328
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 9
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 233819
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 10
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 234962
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 11
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 236105
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 13
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 238391
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 14
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 239534
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 1
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237121
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 2
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237248
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 3
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237375
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 4
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237502
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 5
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237629
+
+# Config Parameters:
+dataQueueDepth: 4
+computeQueueDepth: 4
+vdmNumBanks: 16
+vlsPipelineDepth: 11
+vdmBankBusyTime: 2
+numLanes: 4
+pipelineDepthMul: 12
+pipelineDepthAdd: 6
+pipelineDepthDiv: 8
+pipelineDepthShuffle: 5
+# Execution Time:
+Cycles: 237756
+

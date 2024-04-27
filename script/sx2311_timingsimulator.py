@@ -54,7 +54,7 @@ class Trace(object):
 
 class Core():
     MVL = 64  # Max vector length
-    def __init__(self, trace, config, pipelined=False):
+    def __init__(self, trace, config, pipelined=False, chaining=False):
         self.TRACE = trace
         self.CONFIG = config
 

@@ -1,4 +1,5 @@
 import random
+from ctypes import c_int32
 vdmem = []
 sdmem = []
 
@@ -112,10 +113,12 @@ vdmem.extend(vector_packhi)
 vdmem_file_path = "VDMEM.txt"
 sdmem_file_path = "SDMEM.txt"
 
+max_value = pow(2, 31) - 1
 # Writing the vector to a text file
 try:
     with open(vdmem_file_path, 'w') as output_file:
         for value in vdmem:
+            value = c_int32(value).value
             output_file.write(f"{value}\n")
     print("Vector has been successfully generated and stored in", vdmem_file_path)
 except Exception as e:

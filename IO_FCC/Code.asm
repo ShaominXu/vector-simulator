@@ -1,8 +1,10 @@
+CVM
 LS SR1 SR0 0 # SR1 = 1
 LS SR2 SR0 1 # SR2 = 2
 LS SR3 SR0 2 # SR3 = 64 is VF length
 LS SR4 SR0 3 # SR4 = 256 is vector length
 LS SR6 SR0 4 # SR6 = 256 * 258 is the pointer to store data
+MTCL SR3 # Set the length of vector to 64
 # Load vector a
 ADD SR5 SR0 SR0
 LV VR0 SR5 # SR5 is the pointer to load data

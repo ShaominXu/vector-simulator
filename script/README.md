@@ -1,8 +1,4 @@
-# Vector Simulator
 
-ECE-GY-9413 Course Project
-
-Shaomin Xu, sx2311
 
 ## Run
 
@@ -63,5 +59,11 @@ python sx2311_funcsimulator.py --iodir ../IO_Conv --trace
 python sx2311_timingsimulator.py --iodir ../IO_Dot_Product
 python sx2311_timingsimulator.py --iodir ../IO_FCC
 python sx2311_timingsimulator.py --iodir ../IO_Conv
+```
+##### Optimization: Pipelined Instruction Start-up
+```shell
+python sx2311_timingsimulator.py --iodir ../IO_Dot_Product --pipelined
+python sx2311_timingsimulator.py --iodir ../IO_FCC --pipelined
+python sx2311_timingsimulator.py --iodir ../IO_Conv --pipelined
 ```
 

@@ -270,7 +270,7 @@ class Core():
 
 if __name__ == "__main__":
     #parse arguments for input file location
-    parser = argparse.ArgumentParser(description='Vector Core Functional Simulator')
+    parser = argparse.ArgumentParser(description='Vector Core Time Simulator')
     parser.add_argument('--iodir', default="", type=str, help='Path to the folder containing the input files - instructions and data.')
     parser.add_argument("--pipelined", default=False, action='store_true', help="Pipelined instruction start-up.")
     args = parser.parse_args()

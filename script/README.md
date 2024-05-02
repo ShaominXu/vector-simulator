@@ -44,7 +44,7 @@ python sx2311_funcsimulator.py --iodir ../IO_Conv
 ```shell
 python sx2311_funcsimulator.py --iodir ../IO_FFT
 ```
-The real part of the result is stored in VDMEM[0:63] and the imaginary part is stored in VDMEM[64:127].
+The real part of the result is stored in VDMEM[0:128) and the imaginary part is stored in VDMEM[128:256).
 
 ### Part 3: Timing Simulator
 #### Get the dynamic flow - trace.txt

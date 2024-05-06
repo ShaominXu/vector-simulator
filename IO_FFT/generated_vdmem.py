@@ -1,4 +1,4 @@
-
+import numpy as np
 # Generating a vector x = {1024+512j, 1024-512j, 512+1024j, 512-1024j, . . . . (32 times)}
 # real part of x = {1024, 1024, 512, 512, . . . . (32 times)} stored in address 0 ~ 127
 # imaginary part of x = {512, -512, 1024, -1024, . . . . (32 times)} stored in address 128 ~ 255
@@ -28,9 +28,38 @@ for v in vector_w:
         else:
             w_real.append(int(float(v.split('-')[0]) * 1000))
             w_imag.append(-int(float(v.split('-')[1][:-1]) * 1000))
-        print(w_real, w_imag)
+
 vector_w = [w_real, w_imag]
 
+vector_cache = [0] * 256
+
+vector_expanded = []
+# Function to perform FFT
+twiddle_factors = [(real + 1j * imag)/1000 for real, imag in zip(vector_w[0], vector_w[1])]
+def fft(vector_x):
+    N = len(vector_x)
+    if N <= 1:
+        return vector_x
+    else:
+        even = fft(vector_x[::2])  # FFT of even-indexed elements
+        odd = fft(vector_x[1::2])   # FFT of odd-indexed elements
+        y = [0] * N
+        j =len(twiddle_factors)  // (N // 2)
+        for i in range(N//2):
+            y[i] = even[i] + twiddle_factors[i * j] * odd[i]
+            y[i + N//2] = even[i] - twiddle_factors[i * j] * odd[i]
+        return y
+
+# Combine real and imaginary parts into complex numbers
+input_vector = [real + 1j * imag for real, imag in zip(vector_x[0], vector_x[1])]
+
+print("Input Vector:", input_vector)
+print("Twiddle Factors:", twiddle_factors)
+# Apply FFT
+fft_output = fft(input_vector)
+
+# Print the FFT result
+print("FFT Output:", fft_output)
 
 # Specify the file path
 output_file_path = "VDMEM.txt"

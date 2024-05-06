@@ -4,7 +4,7 @@
 # imaginary part of weights w is stored in VDMEM 320~383
 CVM
 # 64 2-point FFTs
-LS SR7 SR0 6 # SR7 = 64
+LS SR7 SR0 6 # SR7 = 64 is stride of load w
 LS SR2 SR0 1 # SR2 = 1
 MTCL SR2 # SR2 is k range
 # load w
@@ -75,7 +75,7 @@ BLT SR1 SR6 -4
 ADD SR2 SR2 SR2
 MTCL SR2
 LS SR1 SR0 1 # SR1 = 1
-SRL SR7 SR7 SR1
+SRL SR7 SR7 SR1 # SR7 is stride of load w
 LS SR1 SR0 6 # SR1 = 64
-BLE SR2 SR1 -68 # jump to # load w
+BLE SR2 SR1 -70 # jump to # load w
 HALT
